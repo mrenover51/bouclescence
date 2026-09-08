@@ -1,0 +1,11 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import { MAX_PRODUCT_PHOTO_BYTES, photoPlanSchema, validatePhotoSelection, validatePhotoSignature } from "../src/lib/product-photo-validation.ts";
+const jpeg=(name="photo.jpg",size=32)=>new File([new Uint8Array([0xff,0xd8,0xff,...new Array(Math.max(0,size-3)).fill(0)])],name,{type:"image/jpeg"});
+test("accepte une photo et une sélection simultanée de cinq photos",()=>{assert.equal(validatePhotoSelection(0,[jpeg()]),null);assert.equal(validatePhotoSelection(0,Array.from({length:5},(_,index)=>jpeg(`${index}.jpg`))),null);});
+test("refuse plus de dix photos",()=>{assert.match(validatePhotoSelection(0,Array.from({length:11},(_,index)=>jpeg(`${index}.jpg`)))??"",/10 par produit/);});
+test("refuse une image supérieure à 8 Mo",()=>{const file=new File([new Uint8Array(MAX_PRODUCT_PHOTO_BYTES+1)],"large.jpg",{type:"image/jpeg"});assert.match(validatePhotoSelection(0,[file])??"",/8 Mo/);});
+test("refuse un type non image",()=>{const file=new File(["bonjour"],"note.txt",{type:"text/plain"});assert.match(validatePhotoSelection(0,[file])??"",/JPG, PNG ou WEBP/);});
+test("vérifie la signature réelle du fichier",async()=>{await assert.rejects(()=>validatePhotoSignature(new File(["faux jpeg"],"fake.jpg",{type:"image/jpeg"})),/contenu/);await assert.doesNotReject(()=>validatePhotoSignature(jpeg()));});
+test("exige exactement une photo principale",()=>{const valid=photoPlanSchema.safeParse(Array.from({length:5},(_,index)=>({kind:"new",newIndex:index,altText:"",isPrimary:index===2})));assert.equal(valid.success,true);const invalid=photoPlanSchema.safeParse([{kind:"new",newIndex:0,altText:"",isPrimary:true},{kind:"new",newIndex:1,altText:"",isPrimary:true}]);assert.equal(invalid.success,false);});
+test("autorise un produit sans photo",()=>{assert.equal(photoPlanSchema.safeParse([]).success,true);});
