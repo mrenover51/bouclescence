@@ -1,0 +1,2 @@
+import { StaticPage } from "@/components/layout/static-page";
+export default function Page(){return <StaticPage eyebrow="La maison" title="Des bijoux faits avec cœur"><p>Bouclescence imagine des bijoux féminins, délicats et singuliers. Chaque création naît d’un goût pour les lignes organiques, les perles irrégulières et les détails qui prennent leur temps.</p><p>Le récit complet de la créatrice et les photographies de l’atelier seront intégrés à partir de vos contenus de marque.</p></StaticPage>}

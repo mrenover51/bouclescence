@@ -1,0 +1,2 @@
+import type { ReactNode } from "react";
+export function StaticPage({ eyebrow, title, children }: { eyebrow?: string; title: string; children: ReactNode }) { return <div className="shell min-h-[55svh] py-16 sm:py-24"><div className="max-w-3xl">{eyebrow && <p className="eyebrow text-wine">{eyebrow}</p>}<h1 className="display mt-3 text-5xl sm:text-7xl">{title}</h1><div className="mt-8 space-y-5 leading-8 text-muted">{children}</div></div></div>; }

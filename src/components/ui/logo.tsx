@@ -1,0 +1,2 @@
+import Link from "next/link";
+export function Logo({ compact = false }: { compact?: boolean }) { return <Link href="/" className="inline-flex flex-col items-center leading-none" aria-label="Bouclescence, accueil"><span className={`display uppercase ${compact ? "text-2xl tracking-[.13em]" : "text-xl tracking-[.08em] sm:text-[2rem] sm:tracking-[.13em]"}`}>Bouclescence</span>{!compact && <span className="mt-1 hidden text-[.48rem] uppercase tracking-[.38em] text-muted sm:block">Bijoux faits avec cœur</span>}</Link>; }

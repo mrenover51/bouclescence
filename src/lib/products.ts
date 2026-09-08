@@ -1,0 +1,7 @@
+export type Product = { slug: string; name: string; collection: string; price: number; compareAt?: number; image: string; secondaryImage?: string; badge?: string; stock: number; sku: string; description: string };
+export const products: Product[] = [
+  { slug: "boucles-celeste", name: "Boucles Céleste", collection: "Éclat nacré", price: 49, image: "/images/boucles-celeste-face.png", secondaryImage: "/images/boucles-celeste-portees.png", badge: "Pièce signature", stock: 1, sku: "BC-BO-CEL-001", description: "Une créole délicatement texturée, ponctuée d’une perle d’eau douce naturellement irrégulière. Chaque paire est assemblée à la main et possède sa propre nuance." },
+  { slug: "boucles-aube", name: "Boucles Aube", collection: "Les essentiels", price: 42, image: "/images/hero-boucles-perles.png", badge: "Nouveauté", stock: 4, sku: "BC-BO-AUB-002", description: "Des boucles lumineuses pensées pour accompagner les gestes du quotidien." },
+  { slug: "boucles-nacree", name: "Boucles Nacrée", collection: "Éclat nacré", price: 55, compareAt: 62, image: "/images/boucles-celeste-portees.png", badge: "Petite série", stock: 2, sku: "BC-BO-NAC-003", description: "Une silhouette organique et une lumière douce, en édition confidentielle." },
+];
+export const formatPrice = (price: number) => new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(price);
