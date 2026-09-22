@@ -3,6 +3,7 @@ import { Cormorant_Garamond, Manrope } from "next/font/google";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import "./globals.css";
+import { absoluteUrl, getSiteUrl, jsonLd } from "@/lib/seo";
 
 const display = Cormorant_Garamond({
   variable: "--font-display",
@@ -13,14 +14,19 @@ const display = Cormorant_Garamond({
 const sans = Manrope({ variable: "--font-sans", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: { default: "Bouclescence — Bijoux faits avec cœur", template: "%s — Bouclescence" },
-  description: "Bijoux féminins en petites séries, imaginés et assemblés avec soin en France.",
+  metadataBase: getSiteUrl(),
+  title: { default: "Bouclescence | Boucles d’oreilles et bijoux de créatrice", template: "%s | Bouclescence" },
+  description: "Découvrez l’univers Bouclescence et ses boucles d’oreilles féminines, originales et délicates, proposées en petites séries.",
+  applicationName: "Bouclescence",
+  openGraph: { siteName:"Bouclescence",locale:"fr_FR",type:"website",url:"/" },
+  robots: { index:true,follow:true },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="fr" className={`${display.variable} ${sans.variable}`}>
       <body>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{__html:jsonLd({"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":`${absoluteUrl("/")}#organization`,name:"Bouclescence",url:absoluteUrl("/")},{"@type":"WebSite","@id":`${absoluteUrl("/")}#website`,name:"Bouclescence",url:absoluteUrl("/"),inLanguage:"fr-FR",publisher:{"@id":`${absoluteUrl("/")}#organization`}}]})}} />
         <a className="skip-link" href="#contenu">Aller au contenu</a>
         <Header />
         <main id="contenu">{children}</main>

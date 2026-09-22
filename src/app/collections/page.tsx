@@ -1,0 +1,7 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { getPublicCollections } from "@/lib/catalog";
+import { pageMetadata } from "@/lib/seo";
+export const revalidate=60;
+export const metadata:Metadata=pageMetadata({title:"Collections de boucles d’oreilles",description:"Explorez les collections Bouclescence et découvrez des boucles d’oreilles féminines aux univers délicats et singuliers.",path:"/collections"});
+export default async function CollectionsPage(){const collections=(await getPublicCollections()).filter(item=>item.is_indexable);return <div className="shell py-16 sm:py-24"><header className="max-w-2xl"><p className="eyebrow text-wine">Bouclescence</p><h1 className="display mt-3 text-6xl sm:text-7xl">Nos collections</h1><p className="mt-5 leading-8 text-muted">Explorez les univers qui rassemblent les créations Bouclescence actuellement disponibles.</p></header><div className="mt-14 grid gap-5 sm:grid-cols-2">{collections.map(collection=><Link className="group border border-line bg-paper p-7 transition hover:border-wine" href={`/collections/${collection.slug}`} key={collection.id}><h2 className="display text-4xl">{collection.name}</h2><p className="mt-4 leading-7 text-muted">{collection.introduction||collection.description||"Découvrir cette collection."}</p><span className="mt-6 inline-block text-xs font-bold uppercase tracking-wider underline underline-offset-4">Voir la collection</span></Link>)}</div></div>}

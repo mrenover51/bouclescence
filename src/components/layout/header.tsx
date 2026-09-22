@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useCart } from "@/lib/cart-store";
 import { CartDrawer } from "@/components/shop/cart-drawer";
 import { Logo } from "@/components/ui/logo";
-const links = [{ href: "/boutique", label: "Boutique" }, { href: "/collections/eclat-nacre", label: "Collections" }, { href: "/a-propos", label: "Notre histoire" }, { href: "/contact", label: "Contact" }];
+const links = [{ href: "/boutique", label: "Boutique" }, { href: "/collections", label: "Collections" }, { href: "/a-propos", label: "Notre histoire" }, { href: "/contact", label: "Contact" }];
 export function Header() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);

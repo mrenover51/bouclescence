@@ -1,0 +1,4 @@
+import Link from "next/link";
+import { absoluteUrl, jsonLd } from "@/lib/seo";
+type Item={name:string;href:string};
+export function Breadcrumb({items}:{items:Item[]}){const data={"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:items.map((item,index)=>({"@type":"ListItem",position:index+1,name:item.name,item:absoluteUrl(item.href)}))};return <><script type="application/ld+json" dangerouslySetInnerHTML={{__html:jsonLd(data)}}/><nav aria-label="Fil d’Ariane" className="mb-7 text-xs text-muted"><ol className="flex flex-wrap items-center gap-2">{items.map((item,index)=><li className="flex items-center gap-2" key={item.href}>{index>0&&<span aria-hidden="true">/</span>}{index===items.length-1?<span aria-current="page">{item.name}</span>:<Link className="underline-offset-4 hover:underline" href={item.href}>{item.name}</Link>}</li>)}</ol></nav></>}

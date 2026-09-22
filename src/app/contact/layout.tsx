@@ -1,0 +1,1 @@
+import type { Metadata } from "next";import { pageMetadata } from "@/lib/seo";export const metadata:Metadata=pageMetadata({title:"Contacter Bouclescence",description:"Une question sur une création ou une commande ? Contactez Bouclescence.",path:"/contact"});export default function Layout({children}:{children:React.ReactNode}){return children}
