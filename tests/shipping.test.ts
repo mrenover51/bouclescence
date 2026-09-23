@@ -1,0 +1,11 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import { calculateShipping, DEFAULT_SHIPPING_SETTINGS } from "../src/lib/shipping.ts";
+const base={...DEFAULT_SHIPPING_SETTINGS,standardShippingCost:4.9,freeShippingAmount:50,freeShippingQuantity:4};
+test("applique les frais standards",()=>assert.deepEqual(calculateShipping(15,1,base),{subtotal:15,quantity:1,shippingCost:4.9,freeShipping:false,total:19.9}));
+test("offre la livraison par montant",()=>assert.equal(calculateShipping(50,2,base).freeShipping,true));
+test("offre la livraison par quantité",()=>assert.equal(calculateShipping(45,4,{...base,freeShippingAmount:100}).shippingCost,0));
+test("utilise un OU lorsque les deux règles sont actives",()=>assert.equal(calculateShipping(60,4,base).freeShipping,true));
+test("ignore les règles désactivées",()=>assert.equal(calculateShipping(100,10,{...base,freeShippingAmountEnabled:false,freeShippingQuantityEnabled:false}).shippingCost,4.9));
+test("ne facture pas un panier vide",()=>assert.deepEqual(calculateShipping(0,0,base),{subtotal:0,quantity:0,shippingCost:0,freeShipping:false,total:0}));
+test("respecte exactement les valeurs limites",()=>{assert.equal(calculateShipping(49.99,3,base).freeShipping,false);assert.equal(calculateShipping(50,3,base).freeShipping,true);assert.equal(calculateShipping(45,4,base).freeShipping,true)});

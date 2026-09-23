@@ -4,7 +4,7 @@ import { extensionForMime, MAX_PRODUCT_PHOTOS, parsePhotoPlan, validatePhotoFile
 
 type UploadedPhoto={id:string;path:string};
 export async function validateProductPhotoInput(formData:FormData) { const plan=parsePhotoPlan(formData.get("photo_plan")); const files=formData.getAll("images").filter((value):value is File=>value instanceof File&&value.size>0); if(plan.filter(item=>item.kind==="new").length!==files.length)throw new Error("La sélection de photos a changé pendant l’enregistrement."); for(const file of files){validatePhotoFile(file);await validatePhotoSignature(file);} return plan; }
-export async function cleanupProductPhotos(productId:string) { const supabase=await createClient(); const {data}=await supabase.from("product_images").select("storage_path").eq("product_id",productId); if(data?.length)await supabase.storage.from("product-images").remove(data.map(image=>image.storage_path)); }
+export async function cleanupProductPhotos(productId:string) { const supabase=await createClient(); const {data}=await supabase.from("product_images").select("storage_path").eq("product_id",productId); const stored=(data??[]).map(image=>image.storage_path).filter(path=>!path.startsWith("/")&&!path.startsWith("http")); if(stored.length)await supabase.storage.from("product-images").remove(stored); }
 export async function syncProductPhotos(productId:string,formData:FormData) {
   const supabase=await createClient();
   let plan;
@@ -25,7 +25,8 @@ export async function syncProductPhotos(productId:string,formData:FormData) {
     const imageIds=plan.map(item=>item.kind==="existing"?item.id:uploaded[item.newIndex]!.id);const altTexts=plan.map(item=>item.altText);const primaryIndex=plan.findIndex(item=>item.isPrimary);const primaryId=primaryIndex>=0?imageIds[primaryIndex]:null;
     const {data:deletedPaths,error:syncError}=await supabase.rpc("sync_product_images",{p_product_id:productId,p_image_ids:imageIds,p_primary_id:primaryId,p_alt_texts:altTexts});
     if(syncError)throw new Error(`L’ordre des photos n’a pas pu être enregistré : ${syncError.message}`);
-    if(deletedPaths.length){const {error:removeError}=await supabase.storage.from("product-images").remove(deletedPaths);if(removeError)return {warning:"Les photos ont été retirées du produit, mais certains anciens fichiers Storage n’ont pas pu être nettoyés."};}
+    const storedDeletedPaths=deletedPaths.filter(path=>!path.startsWith("/")&&!path.startsWith("http"));
+    if(storedDeletedPaths.length){const {error:removeError}=await supabase.storage.from("product-images").remove(storedDeletedPaths);if(removeError)return {warning:"Les photos ont été retirées du produit, mais certains anciens fichiers Storage n’ont pas pu être nettoyés."};}
     return {warning:null};
   } catch(error) {
     if(uploaded.length){await supabase.from("product_images").delete().in("id",uploaded.map(image=>image.id));await supabase.storage.from("product-images").remove(uploaded.map(image=>image.path));}

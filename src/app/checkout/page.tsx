@@ -1,2 +1,7 @@
-import { StaticPage } from "@/components/layout/static-page";
-export default function Page(){return <StaticPage eyebrow="Paiement sécurisé" title="Finaliser ma commande"><p>Le tunnel de commande sera connecté à Stripe et aux contrôles de stock serveur lors d’un prochain sprint. Cette page réserve déjà l’URL finale.</p></StaticPage>}
+"use client";
+import Link from "next/link";
+import { useCart } from "@/lib/cart-store";
+import { formatPrice } from "@/lib/products";
+import { calculateShipping } from "@/lib/shipping";
+import { useShippingSettings } from "@/components/shop/shipping-provider";
+export default function Page(){const items=useCart(state=>state.items);const settings=useShippingSettings();const subtotal=items.reduce((sum,item)=>sum+item.price*item.quantity,0);const quantity=items.reduce((sum,item)=>sum+item.quantity,0);const totals=calculateShipping(subtotal,quantity,settings);return <div className="shell py-16"><p className="eyebrow text-wine">Paiement sécurisé</p><h1 className="display mt-3 text-5xl">Finaliser ma commande</h1><div className="mt-10 max-w-xl bg-ivory p-7"><div className="flex justify-between py-2"><span>Sous-total</span><span>{formatPrice(totals.subtotal)}</span></div><div className="flex justify-between py-2"><span>Livraison</span><span>{totals.freeShipping?"Offerte":formatPrice(totals.shippingCost)}</span></div><div className="mt-3 flex justify-between border-t border-line pt-5 font-bold"><span>Total</span><span>{formatPrice(totals.total)}</span></div></div><p className="mt-8 max-w-xl text-muted">Le paiement en ligne sera activé prochainement. Votre total utilise déjà les règles de livraison configurées dans l’administration.</p><Link href="/panier" className="mt-6 inline-block underline underline-offset-4">Retour au panier</Link></div>}

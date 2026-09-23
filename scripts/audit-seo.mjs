@@ -1,0 +1,5 @@
+const origin=process.argv[2]||"http://localhost:3000";
+const paths=["/","/boutique","/collections/creations-bouclescence","/produit/boucles-eclat-ivoire","/produit/boucles-fleur-ivoire","/produit/boucles-lotus-lagon","/produit/boucles-dahlia-noir","/produit/boucles-arc-emeraude","/boucles-oreilles-argile-polymere","/a-propos"];
+const report=await Promise.all(paths.map(async path=>{const response=await fetch(origin+path);const html=await response.text();const value=(regexp)=>html.match(regexp)?.[1]?.replace(/<[^>]+>/g," ").replace(/\s+/g," ").trim()||"";return {path,status:response.status,title:value(/<title>(.*?)<\/title>/s),description:value(/<meta name="description" content="(.*?)"/s),h1:value(/<h1[^>]*>(.*?)<\/h1>/s),canonical:value(/<link rel="canonical" href="(.*?)"/s),jsonLd:(html.match(/application\/ld\+json/g)||[]).length,meaningfulAlts:(html.match(/<img[^>]+alt="[^"]+"/g)||[]).length,noindex:/<meta name="robots" content="[^"]*noindex/.test(html)};}));
+console.log(JSON.stringify(report,null,2));
+if(report.some(page=>page.status!==200||!page.title||!page.description||!page.h1||!page.canonical||page.noindex))process.exitCode=1;

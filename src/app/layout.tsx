@@ -4,6 +4,8 @@ import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import "./globals.css";
 import { absoluteUrl, getSiteUrl, jsonLd } from "@/lib/seo";
+import { ShippingProvider } from "@/components/shop/shipping-provider";
+import { getShippingSettings } from "@/lib/shipping-settings";
 
 const display = Cormorant_Garamond({
   variable: "--font-display",
@@ -22,14 +24,17 @@ export const metadata: Metadata = {
   robots: { index:true,follow:true },
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const shippingSettings = await getShippingSettings();
   return (
     <html lang="fr" className={`${display.variable} ${sans.variable}`}>
       <body>
         <script type="application/ld+json" dangerouslySetInnerHTML={{__html:jsonLd({"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":`${absoluteUrl("/")}#organization`,name:"Bouclescence",url:absoluteUrl("/")},{"@type":"WebSite","@id":`${absoluteUrl("/")}#website`,name:"Bouclescence",url:absoluteUrl("/"),inLanguage:"fr-FR",publisher:{"@id":`${absoluteUrl("/")}#organization`}}]})}} />
         <a className="skip-link" href="#contenu">Aller au contenu</a>
-        <Header />
-        <main id="contenu">{children}</main>
+        <ShippingProvider settings={shippingSettings}>
+          <Header />
+          <main id="contenu">{children}</main>
+        </ShippingProvider>
         <Footer />
       </body>
     </html>
